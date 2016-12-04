@@ -1,0 +1,28 @@
+Instalação OSSEC HIDS
+
+passo 1: Download http://ossec.github.io/downloads.html versão 2.8.3
+passo 2: Extração do arquivo "tar -xvf ossec-hids-2.8.3"
+passo 3: Entrar na pasta ossec e instalar "./install.sh"
+passo 4: Configurando OssecHIDS:
+			tipo de instalação: 'local'
+			local de instalação: "/var/ossec"
+			notificações por e-mail: "n"
+			sistema de verificação de integridade: "s"
+			sistema de detecção de rootkis: "s"
+			sistema de respostas automaticas: "s"
+			habilitar firewall-drop: "s"
+			lista de endereços não bloqueados pela resposta automatica: 172.16.255.202; 8.8.8.8; 10.255.138.2/24; 10.255.138.3/24
+
+passo 5: Configuração do arquivo "/var/ossec/etc/ossec.conf"
+			Alem das configurações padrões foram adicionadas as seguintes mudanças:
+				na tag <syscheck>: "<alert_new_files>yes</alert_new_files>"
+									para alertar se novos arquivos forem criados
+
+				na tag <directories>: foi adcionado mais um diretório para ser analisado "/home/raiz"
+									  alem disso foi adicionado a opção report_changes="yes" para alertar
+									  qualquer mudança feita nesses diretorios.
+
+passo 6: Modificando as regras.
+		 o arquivo com as regras padrões do ossec é o /var/ossec/rules/ossec_rules.xml
+		 o arquivo local_rules.xml é onde foi pode ser adicionado regras customizadas.
+		 modificamos  a regra 554 https://www.digitalocean.com/community/tutorials/how-to-set-up-a-local-ossec-installation-on-fedora-21
