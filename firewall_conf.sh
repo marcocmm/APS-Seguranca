@@ -5,7 +5,8 @@ ifconfig enp63s0:1 10.255.138.1/24
 echo 1 > /proc/sys/net/ipv4/ip_forward
 
 iptables -t nat -A POSTROUTING -s 10.255.138.2 -j SNAT --to 172.16.1.138
-iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-port 3128 
+iptables -t nat -A PREROUTING -s 10.255.138.0/24 -p tcp --dport 80 -j REDIRECT --to-port 3128 
+iptables -t nat -A PREROUTING -s 10.255.138.0/24 -p tcp --dport 443 -j REDIRECT --to-port 3128 
 iptables -P FORWARD ACCEPT
 
 
@@ -19,7 +20,8 @@ iptables -P FORWARD ACCEPT
 
 #b) O firewall deve permitir que os hosts da Internet acessem o host 1 e host 2 via HTTP;
 #Como escolher qual dos hosts usar?
-iptables -t nat -A PREROUTING -p tcp --dport 80 -j DNAT --to 10.255.138.2
+iptables -t nat -A PREROUTING ! -s 10.255.138.0/24 -p tcp --dport 80 -j DNAT --to 10.255.138.2
+iptables -t nat -A PREROUTING ! -s 10.255.138.0/24 -p tcp --dport 81 -j DNAT --to 10.255.138.3:80
 iptables -A FORWARD -p tcp --dport 80 -j ACCEPT
 iptables -A FORWARD -p tcp --sport 80 -j ACCEPT
 
