@@ -7,7 +7,7 @@ echo 1 > /proc/sys/net/ipv4/ip_forward
 iptables -t nat -A POSTROUTING -s 10.255.138.2 -j SNAT --to 172.16.1.138
 iptables -t nat -A PREROUTING -s 10.255.138.0/24 -p tcp --dport 80 -j REDIRECT --to-port 3128 
 iptables -t nat -A PREROUTING -s 10.255.138.0/24 -p tcp --dport 443 -j REDIRECT --to-port 3128 
-iptables -P FORWARD ACCEPT
+iptables -P FORWARD DROP
 
 
 
@@ -22,51 +22,7 @@ iptables -P FORWARD ACCEPT
 #Como escolher qual dos hosts usar?
 iptables -t nat -A PREROUTING ! -s 10.255.138.0/24 -p tcp --dport 80 -j DNAT --to 10.255.138.2
 iptables -t nat -A PREROUTING ! -s 10.255.138.0/24 -p tcp --dport 81 -j DNAT --to 10.255.138.3:80
-iptables -A FORWARD -p tcp --dport 80 -j ACCEPT
-iptables -A FORWARD -p tcp --sport 80 -j ACCEPT
 
-
-
-#d) Somente o firewall pode acessar os hosts da LAN via SSH.
-iptables -A INPUT -s 10.255.138.0/24 -p tcp --dport 22 -j DROP
-
-#e) Somente um host da rede da UTFPR (exemplo do IP 172.16.2.X e não do IP 10.255.X.2) poderá acessar o firewall via SSH.
-iptables -A INPUT ! -s 172.16.1.137 -p tcp --dport 22 -j DROP
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#Permite a comunicação através do firewall, alterando o ip para o do firewall
-iptables -t nat -A POSTROUTING -s 10.255.138.2 -j SNAT --to 172.16.1.1387
-#Faz todos pacotes http passarem pelo proxy
-iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-port 3128 
-iptables -P FORWARD DROP
-
-#a) Deverá ser configurado um Proxy e um HIDS no firewall;
-
-#b) O firewall deve permitir que os hosts da Internet acessem o host 1 e host 2 via HTTP;
-#Como escolher qual dos hosts usar?
-iptables -t nat -A PREROUTING -p tcp --dport 80 -j DNAT --to 10.255.138.2
 iptables -A FORWARD -p tcp --dport 80 -j ACCEPT
 iptables -A FORWARD -p tcp --sport 80 -j ACCEPT
 
@@ -82,3 +38,5 @@ iptables -A INPUT -s 10.255.138.0/24 -p tcp --dport 22 -j DROP
 
 #e) Somente um host da rede da UTFPR (exemplo do IP 172.16.2.X e não do IP 10.255.X.2) poderá acessar o firewall via SSH.
 iptables -A INPUT ! -s 172.16.1.137 -p tcp --dport 22 -j DROP
+
+
